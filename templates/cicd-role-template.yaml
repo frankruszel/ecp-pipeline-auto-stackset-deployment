@@ -23,6 +23,11 @@ Parameters:
     Default: ""    
 
 Resources:
+  GithubConnection:
+    Type: AWS::CodeStarConnections::Connection
+    Properties:
+      ConnectionName: !Sub ${ResourceNamePrefix}-GithubConnection
+      ProviderType: GitHub
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -48,7 +53,6 @@ Resources:
             Action:
               - codepipeline:*
               - cloudformation:*
-              - codecommit:*   
               - iam:ListRoles
               - iam:PassRole
               - codebuild:BatchGetBuilds
@@ -57,6 +61,12 @@ Resources:
               - codebuild:BatchGetBuilds
               - sns:Publish
             Resource: "*"
+          -
+            Effect: "Allow"
+            Action:
+              - codestar-connections:UseConnection
+            Resource:
+              - !Ref GithubConnection
           -
             Effect: Allow
             Action:
@@ -267,3 +277,9 @@ Outputs:
   CodePipelineEventsRoleOutput:
     Description: CloudWatch Event Role ARN 
     Value: !GetAtt CodePipelineEventsRole.Arn
+  GithubConnection:
+    Description: GithubConnection resource
+    Value: !Ref GithubConnection
+    Export:
+      Name: GithubConnection
+
