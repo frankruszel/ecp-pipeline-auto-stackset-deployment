@@ -13,7 +13,7 @@ Parameters:
     Type: String
     Description: "Github repo owner"
 
-  ApplicationName:
+  ResourceNamePrefix:
     Description: Please specify the application name prefix for all the resources
     Type: String
     Default: ""
@@ -22,15 +22,15 @@ Parameters:
     Type: String
     Default: ""
 
-  DeploymentConfigBucket:
-    Description: Name of the Code bucket
-    Type: String
-    Default: ""
+  # DeploymentConfigBucket:
+  #   Description: Name of the Code bucket
+  #   Type: String
+  #   Default: ""
 
-  DeploymentConfigKey:
-    Description: Name of the zip file
-    Type: String
-    Default: ""
+  # DeploymentConfigKey:
+  #   Description: Name of the zip file
+  #   Type: String
+  #   Default: ""
 
   CodeBuildProjectRoleARN:
     Description: Please specify the Code Build Project Role ARN
@@ -85,18 +85,12 @@ Resources:
   #       BranchName: main
   #       S3: 
   #         Bucket: !Ref DeploymentConfigBucket
-  #         Key: !Ref DeploymentConfigKey
-  GithubConnection:
-    Type: AWS::CodeStarConnections::Connection
-    Properties:
-      ConnectionName: !Sub ${ApplicationName}-GithubConnection
-      ProviderType: GitHub
-      
+  #         Key: !Ref DeploymentConfigBucket
   # AppCodeRepositoryNotificationRule:
   #   Type: 'AWS::CodeStarNotifications::NotificationRule'
   #   DependsOn: AppCodeRepository
   #   Properties:
-  #       Name: !Sub '${ApplicationName}-PR-notification-rule'
+  #       Name: !Sub '${ResourceNamePrefix}-PR-notification-rule'
   #       DetailType: FULL
   #       Resource: !GetAtt AppCodeRepository.Arn
   #       EventTypeIds: 
@@ -105,9 +99,15 @@ Resources:
   #       Targets: 
   #           - TargetType: SNS 
   #             TargetAddress: !Ref PRApprovalSNSARN
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref TemplateBucket
 
   OUCICDCodeDevBuildProject:
     Type: AWS::CodeBuild::Project
+    DependsOn: S3Bucket
     Properties:
       Artifacts:
         Type: CODEPIPELINE
@@ -135,10 +135,11 @@ Resources:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
       TimeoutInMinutes: 240
-      Name: !Sub '${ApplicationName}-dev-deploy-codebuild-project'
+      Name: !Sub '${ResourceNamePrefix}-dev-deploy-codebuild-project'
 
   OUCICDCodeTESTBuildProject:
     Type: AWS::CodeBuild::Project
+    DependsOn: S3Bucket
     Properties:
       Artifacts:
         Type: CODEPIPELINE
@@ -166,10 +167,11 @@ Resources:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
       TimeoutInMinutes: 240
-      Name: !Sub '${ApplicationName}-test-deploy-codebuild-project'
+      Name: !Sub '${ResourceNamePrefix}-test-deploy-codebuild-project'
 
   OUCICDCodeProdBuildProject:
     Type: AWS::CodeBuild::Project
+    DependsOn: S3Bucket
     Properties:
       Artifacts:
         Type: CODEPIPELINE
@@ -197,10 +199,11 @@ Resources:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
       TimeoutInMinutes: 240
-      Name: !Sub '${ApplicationName}-prod-deploy-codebuild-project'
+      Name: !Sub '${ResourceNamePrefix}-prod-deploy-codebuild-project'
 
   OUCICDTemplateScanner:
     Type: AWS::CodeBuild::Project
+    DependsOn: S3Bucket
     Properties:
       Artifacts:
         Type: CODEPIPELINE
@@ -238,17 +241,18 @@ Resources:
                 - cfn_nag_scan --input-path templates/
                 - for tmplt in $(ls ./template); 
                   do
-                      rel_url=$ARTIFACTS_BUCKET/templates/${ApplicationName}/$tmplt;
+                      rel_url=$ARTIFACTS_BUCKET/templates/${ResourceNamePrefix}/$tmplt;
                       aws s3 cp ./templates/$tmplt s3://$rel_url --acl bucket-owner-full-control;
                       aws cloudformation validate-template --template-url https://s3.amazonaws.com/$rel_url;
                   done
       EncryptionKey: alias/aws/s3
-      Name: !Sub '${ApplicationName}-cfn-scanner-codebuild-project'
+      Name: !Sub '${ResourceNamePrefix}-cfn-scanner-codebuild-project'
   OUCICDPipeline:
     Type: AWS::CodePipeline::Pipeline
+    DependsOn: S3Bucket
     Properties:
       RoleArn: !Ref CodePipelineRoleARN
-      Name: !Sub '${ApplicationName}-cicd-pipeline'
+      Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
       Stages:
         - Actions:
             - ActionTypeId:
@@ -257,8 +261,7 @@ Resources:
                 Provider: CodeStarSourceConnection
                 Version: "1"
               Configuration:
-                RepositoryName: !Ref GithubConnection
-                ConnectionArn: !Ref GithubConnection
+                ConnectionArn: !ImportValue GithubConnection
                 FullRepositoryId: !Sub "${GithubOwner}/${AppRepositoryName}"
                 BranchName: !Ref GithubBranch
               Name: Source-Action
@@ -388,7 +391,7 @@ Resources:
   OUCICDPipelineEventRule: 
     Type: AWS::Events::Rule
     Properties:
-      Name: !Sub '${ApplicationName}-cicdpipeline-trigger-rule'
+      Name: !Sub '${ResourceNamePrefix}-cicdpipeline-trigger-rule'
       EventPattern:
         source:
           - aws.codecommit
@@ -426,7 +429,7 @@ Resources:
                 - Ref: AWS::AccountId 
                 - ":"
                 - Ref: OUCICDPipeline 
-          Id: !Sub '${ApplicationName}-cicdPipeline'
+          Id: !Sub '${ResourceNamePrefix}-cicdPipeline'
           RoleArn: !Ref CloudWatchEventRoleARN
 
 Outputs:
