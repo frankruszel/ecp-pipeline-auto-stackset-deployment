@@ -2,6 +2,17 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: OU CI/CD pipeline
 
 Parameters:
+  GithubBranch:
+    AllowedPattern: ".+"
+    Type: String
+    Description: "Github branch name e.g. development"
+    Default: "main"
+
+  GithubOwner:
+    AllowedPattern: ".+"
+    Type: String
+    Description: "Github repo owner"
+
   ApplicationName:
     Description: Please specify the application name prefix for all the resources
     Type: String
@@ -37,12 +48,12 @@ Parameters:
     Default: ""
 
   AppRepositoryName:
-    Description: Name of the CodeCommit Repository
+    Description: Name of the Github Repository
     Type: String
     Default: ""
 
   AppRepositoryDescription:
-    Description: Description of the CodeCommit Repository
+    Description: Description of the Github Repository
     Type: String
     Default: ""
 
@@ -64,31 +75,36 @@ Parameters:
 
 Resources:
 
-  AppCodeRepository:
-    Type: AWS::CodeCommit::Repository
-    # Condition: HasCodeRepoAndKey
+  # AppCodeRepository:
+  #   Type: AWS::CodeCommit::Repository
+  #   # Condition: HasCodeRepoAndKey
+  #   Properties:
+  #     RepositoryName: !Ref AppRepositoryName
+  #     RepositoryDescription: !Ref AppRepositoryDescription
+  #     Code:
+  #       BranchName: main
+  #       S3: 
+  #         Bucket: !Ref DeploymentConfigBucket
+  #         Key: !Ref DeploymentConfigKey
+  GithubConnection:
+    Type: AWS::CodeStarConnections::Connection
     Properties:
-      RepositoryName: !Ref AppRepositoryName
-      RepositoryDescription: !Ref AppRepositoryDescription
-      Code:
-        BranchName: main
-        S3: 
-          Bucket: !Ref DeploymentConfigBucket
-          Key: !Ref DeploymentConfigKey
-
-  AppCodeRepositoryNotificationRule:
-    Type: 'AWS::CodeStarNotifications::NotificationRule'
-    DependsOn: AppCodeRepository
-    Properties:
-        Name: !Sub '${ApplicationName}-PR-notification-rule'
-        DetailType: FULL
-        Resource: !GetAtt AppCodeRepository.Arn
-        EventTypeIds: 
-            - codecommit-repository-pull-request-created
-            - codecommit-repository-pull-request-source-updated
-        Targets: 
-            - TargetType: SNS 
-              TargetAddress: !Ref PRApprovalSNSARN
+      ConnectionName: !Sub ${ApplicationName}-GithubConnection
+      ProviderType: GitHub
+      
+  # AppCodeRepositoryNotificationRule:
+  #   Type: 'AWS::CodeStarNotifications::NotificationRule'
+  #   DependsOn: AppCodeRepository
+  #   Properties:
+  #       Name: !Sub '${ApplicationName}-PR-notification-rule'
+  #       DetailType: FULL
+  #       Resource: !GetAtt AppCodeRepository.Arn
+  #       EventTypeIds: 
+  #           - codecommit-repository-pull-request-created
+  #           - codecommit-repository-pull-request-source-updated
+  #       Targets: 
+  #           - TargetType: SNS 
+  #             TargetAddress: !Ref PRApprovalSNSARN
 
   OUCICDCodeDevBuildProject:
     Type: AWS::CodeBuild::Project
@@ -228,7 +244,6 @@ Resources:
                   done
       EncryptionKey: alias/aws/s3
       Name: !Sub '${ApplicationName}-cfn-scanner-codebuild-project'
-
   OUCICDPipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -239,12 +254,13 @@ Resources:
             - ActionTypeId:
                 Category: Source
                 Owner: AWS
-                Provider: CodeCommit
+                Provider: CodeStarSourceConnection
                 Version: "1"
               Configuration:
-                RepositoryName: !Ref AppRepositoryName
-                BranchName: main
-                PollForSourceChanges: false
+                RepositoryName: !Ref GithubConnection
+                ConnectionArn: !Ref GithubConnection
+                FullRepositoryId: !Sub "${GithubOwner}/${AppRepositoryName}"
+                BranchName: !Ref GithubBranch
               Name: Source-Action
               OutputArtifacts:
                 - Name: SourceArtifact
