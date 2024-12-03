@@ -17,9 +17,6 @@ phases:
     commands:
       # - echo "Running CFN Nag Scan on Templates"
       # - cfn_nag_scan --input-path $TEMPLATE_FILE_PATH
-      - zip -r ou_deployer.zip deploy_scripts
-      - echo "Download deployer files from CICD Repo and unzip..."
-      - unzip -D ou_deployer.zip
 
       - echo "Triggering deployment.."
       - python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME
