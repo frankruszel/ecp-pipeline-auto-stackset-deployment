@@ -4,19 +4,19 @@
     "stack_set_desciption": "ECP",
     "deployment_targets": {
                             "dev": {
-                                        "org_units": ["dev-ou-1"], 
+                                        "org_units": ["ou-eizi-awqn0i5k"], 
                                         "regions": ["us-east-1"],
                                         "filter_accounts": [],
                                         "filter_type": ""
                                     },
                             "test": {
-                                        "org_units": ["uat-ou-1"], 
+                                        "org_units": ["ou-eizi-fr2yhows"], 
                                         "regions": ["us-east-1"],
                                         "filter_accounts": [],
                                         "filter_type": ""
                                     },                            
                             "prod": {
-                                        "org_units": ["prod-ou-1"], 
+                                        "org_units": ["ou-eizi-cc824o7x"], 
                                         "regions": ["us-east-1"],
                                         "filter_accounts": [],
                                         "filter_type": ""
