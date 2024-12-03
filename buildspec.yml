@@ -17,8 +17,8 @@ phases:
     commands:
       # - echo "Running CFN Nag Scan on Templates"
       # - cfn_nag_scan --input-path $TEMPLATE_FILE_PATH
-      - echo "Download deployer files from CICD Bucket and upzip..."
-      - aws s3 cp s3://$CICD_BUCKET/$CICD_BUCKET_PREFIX/ou_deployer.zip ou_deployer.zip
+      - zip -r ou_deployer.zip deploy_scripts
+      - echo "Download deployer files from CICD Repo and unzip..."
       - unzip -D ou_deployer.zip
 
       - echo "Triggering deployment.."
