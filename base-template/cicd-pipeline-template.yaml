@@ -218,7 +218,7 @@ Resources:
     Properties:
       RoleArn: !Ref CodePipelineRoleARN
       Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
-      PipelineType: "V2"
+      PipelineType: "V2" 
       Triggers:
         - GitConfiguration: 
             SourceActionName: "Source-Action"
