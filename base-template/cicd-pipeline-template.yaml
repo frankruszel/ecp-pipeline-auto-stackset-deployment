@@ -218,12 +218,15 @@ Resources:
     Properties:
       RoleArn: !Ref CodePipelineRoleARN
       Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
+      PipelineType: "V2"
       Triggers:
-        GitConfiguration: 
-          Push:
-            - Branches:
-              Includes: "main"
-        ProviderType: "CodeStarSourceConnection"
+        - GitConfiguration: 
+            SourceActionName: "Source-Action"
+            Push:
+              - Branches:
+                  Includes: 
+                    - "main"
+          ProviderType: "CodeStarSourceConnection"
       Stages:
         - Actions:
             - ActionTypeId:
