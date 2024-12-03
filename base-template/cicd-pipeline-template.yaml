@@ -222,7 +222,8 @@ Resources:
         - GitConfiguration: 
             Push:
               - Branches:
-                  Includes: "main"
+                  Includes: 
+                    - "main"
           ProviderType: "CodeStarSourceConnection"
       Stages:
         - Actions:
