@@ -1,25 +1,25 @@
 {
-    "deployment_action": "",
-    "stack_set_name": "",
-    "stack_set_desciption": "",
+    "deployment_action": "deploy",
+    "stack_set_name": "ECP-IAC-StackSet",
+    "stack_set_desciption": "ECP",
     "deployment_targets": {
                             "dev": {
-                                        "org_units": [], 
-                                        "regions": [],
-                                        "filter_accounts": [],
-                                        "filter_type": ""
+                                        "org_units": ["root"], 
+                                        "regions": ["us-east-1"],
+                                        "filter_accounts": ["273354638471"],
+                                        "filter_type": "INTERSECTION"
                                     },
                             "test": {
-                                        "org_units": [], 
-                                        "regions": [],
-                                        "filter_accounts": [],
-                                        "filter_type": ""
+                                        "org_units": ["root"], 
+                                        "regions": ["us-east-1"],
+                                        "filter_accounts": ["850995553880"],
+                                        "filter_type": "INTERSECTION"
                                     },                            
                             "prod": {
-                                        "org_units": [], 
-                                        "regions": [],
-                                        "filter_accounts": [],
-                                        "filter_type": ""
+                                        "org_units": ["root"], 
+                                        "regions": ["us-east-1"],
+                                        "filter_accounts": ["774305613815"],
+                                        "filter_type": "INTERSECTION"
                                     }                                   
                           },
     "cft_capabilities": ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"],

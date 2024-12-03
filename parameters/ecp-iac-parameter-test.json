@@ -1,0 +1,8 @@
+{
+    "Parameters" : {
+    "VPC1CIDR": "172.21.1.0/24",
+    "Stage": "UAT",
+    "TagPrefix": "ECP-VPC"
+    }
+}
+  
