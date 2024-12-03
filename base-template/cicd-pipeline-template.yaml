@@ -220,6 +220,7 @@ Resources:
       Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
       Triggers:
         - GitConfiguration: 
+            SourceActionName: "Main Push Trigger"
             Push:
               - Branches:
                   Includes: 
