@@ -1,5 +1,5 @@
 {
-    "deployment_action": "deploy",
+    "deployment_action": "delete",
     "stack_set_name": "ECP-IAC-StackSet",
     "stack_set_desciption": "ECP",
     "deployment_targets": {
@@ -16,8 +16,8 @@
                                         "filter_type": ""
                                     },                            
                             "prod": {
-                                        "org_units": ["ou-eizi-cc824o7x"], 
-                                        "regions": ["us-east-1"],
+                                        "org_units": [], 
+                                        "regions": [], 
                                         "filter_accounts": [],
                                         "filter_type": ""
                                     }                                   

@@ -22,16 +22,6 @@ Parameters:
     Type: String
     Default: ""
 
-  # DeploymentConfigBucket:
-  #   Description: Name of the Code bucket
-  #   Type: String
-  #   Default: ""
-
-  # DeploymentConfigKey:
-  #   Description: Name of the zip file
-  #   Type: String
-  #   Default: ""
-
   CodeBuildProjectRoleARN:
     Description: Please specify the Code Build Project Role ARN
     Type: String
@@ -74,31 +64,6 @@ Parameters:
     Default: ""
 
 Resources:
-
-  # AppCodeRepository:
-  #   Type: AWS::CodeCommit::Repository
-  #   # Condition: HasCodeRepoAndKey
-  #   Properties:
-  #     RepositoryName: !Ref AppRepositoryName
-  #     RepositoryDescription: !Ref AppRepositoryDescription
-  #     Code:
-  #       BranchName: main
-  #       S3: 
-  #         Bucket: !Ref DeploymentConfigBucket
-  #         Key: !Ref DeploymentConfigBucket
-  # AppCodeRepositoryNotificationRule:
-  #   Type: 'AWS::CodeStarNotifications::NotificationRule'
-  #   DependsOn: AppCodeRepository
-  #   Properties:
-  #       Name: !Sub '${ResourceNamePrefix}-PR-notification-rule'
-  #       DetailType: FULL
-  #       Resource: !GetAtt AppCodeRepository.Arn
-  #       EventTypeIds: 
-  #           - codecommit-repository-pull-request-created
-  #           - codecommit-repository-pull-request-source-updated
-  #       Targets: 
-  #           - TargetType: SNS 
-  #             TargetAddress: !Ref PRApprovalSNSARN
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Retain
