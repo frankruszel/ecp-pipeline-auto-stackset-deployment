@@ -6,20 +6,20 @@
                             "dev": {
                                         "org_units": ["dev-ou-1"], 
                                         "regions": ["us-east-1"],
-                                        "filter_accounts": ["273354638471"],
-                                        "filter_type": "INTERSECTION"
+                                        "filter_accounts": [],
+                                        "filter_type": ""
                                     },
                             "test": {
                                         "org_units": ["uat-ou-1"], 
                                         "regions": ["us-east-1"],
-                                        "filter_accounts": ["850995553880"],
-                                        "filter_type": "INTERSECTION"
+                                        "filter_accounts": [],
+                                        "filter_type": ""
                                     },                            
                             "prod": {
                                         "org_units": ["prod-ou-1"], 
                                         "regions": ["us-east-1"],
-                                        "filter_accounts": ["774305613815"],
-                                        "filter_type": "INTERSECTION"
+                                        "filter_accounts": [],
+                                        "filter_type": ""
                                     }                                   
                           },
     "cft_capabilities": ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"],
