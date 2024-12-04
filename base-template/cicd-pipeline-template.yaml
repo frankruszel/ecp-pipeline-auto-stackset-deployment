@@ -276,28 +276,8 @@ Resources:
               Configuration:
                 NotificationArn: 
                   !ImportValue TESTApprovalTopicArn
-              Name: DP-Pipeline-Approval
+              Name: Pipeline-Approval
               RunOrder: 1
-            - ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: "1"
-              Configuration:
-                NotificationArn: 
-                  !ImportValue TESTApprovalTopicArn
-              Name: SecOps-Pipeline-Approval
-              RunOrder: 2
-            - ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: "1"
-              Configuration:
-                NotificationArn: 
-                  !ImportValue TESTApprovalTopicArn
-              Name: WPaaS-Admin-Approval
-              RunOrder: 3
           Name: TEST-Approval
         - Actions:
             - ActionTypeId:
@@ -323,18 +303,8 @@ Resources:
               Configuration:
                 NotificationArn: 
                   !ImportValue ProdApprovalTopicArn
-              Name: SecOps-Pipeline-Approval
+              Name: Pipeline-Approval
               RunOrder: 1
-            - ActionTypeId:
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: "1"
-              Configuration:
-                NotificationArn: 
-                  !ImportValue ProdApprovalTopicArn
-              Name: WPaaS-Admin-Approval
-              RunOrder: 2        
           Name: Prod-Approval
         - Actions:
             - ActionTypeId:
