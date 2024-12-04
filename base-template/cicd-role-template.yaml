@@ -7,15 +7,15 @@ Parameters:
     Type: String
     Default: ""
 
-  TESTApprovalSNSARN:
-    Description: Please specify SNS Topic ARN for TEST Approval Communication
-    Type: String
-    Default: ""
+  # TESTApprovalSNSARN:
+  #   Description: Please specify SNS Topic ARN for TEST Approval Communication
+  #   Type: String
+  #   Default: ""
 
-  ProdApprovalSNSARN:
-    Description: Please specify SNS Topic ARN for Production Approval Communication
-    Type: String
-    Default: ""
+  # ProdApprovalSNSARN:
+  #   Description: Please specify SNS Topic ARN for Production Approval Communication
+  #   Type: String
+  #   Default: ""
   
   PermissionBoundaryARN:
     Description: Please specify Permission Boundary Policy ARN
@@ -228,7 +228,7 @@ Resources:
           - Action: sns:Publish
             Effect: Allow
             Resource: 
-              Ref: TESTApprovalSNSARN
+              !ImportValue TESTApprovalTopicArn
         Version: "2012-10-17"
       Roles:
         - Ref: CodePipelineTESTApprovalActionRole
@@ -262,7 +262,7 @@ Resources:
           - Action: sns:Publish
             Effect: Allow
             Resource: 
-              Ref: ProdApprovalSNSARN
+              !ImportValue ProdApprovalTopicArn
         Version: "2012-10-17"
       Roles:
         - Ref: CodePipelineProdApprovalActionRole
@@ -271,12 +271,18 @@ Outputs:
   CodePipelineRoleOutput:
     Description: Code Pipeline Role ARN 
     Value: !GetAtt CodePipelineRole.Arn
+    Export:
+      Name: "CodePipelineRoleOutput"
   CodePipelineBuildProjectRoleOutput:
     Description: Code Build Project Role ARN 
     Value: !GetAtt CodePipelineBuildProjectRole.Arn
+    Export:
+      Name: "CodePipelineBuildProjectRoleOutput"
   CodePipelineEventsRoleOutput:
     Description: CloudWatch Event Role ARN 
     Value: !GetAtt CodePipelineEventsRole.Arn
+    Export:
+      Name: "CodePipelineEventsRoleOutput"
   GithubConnection:
     Description: GithubConnection resource
     Value: !Ref GithubConnection

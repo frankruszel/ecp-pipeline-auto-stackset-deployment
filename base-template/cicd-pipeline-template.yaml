@@ -22,20 +22,20 @@ Parameters:
     Type: String
     Default: ""
 
-  CodeBuildProjectRoleARN:
-    Description: Please specify the Code Build Project Role ARN
-    Type: String
-    Default: "" 
+  # CodeBuildProjectRoleARN:
+  #   Description: Please specify the Code Build Project Role ARN
+  #   Type: String
+  #   Default: ""
   
-  CodePipelineRoleARN:
-    Description: Please specify the Code Pipeline Role ARN
-    Type: String
-    Default: "" 
+  # CodePipelineRoleARN:
+  #   Description: Please specify the Code Pipeline Role ARN
+  #   Type: String
+  #   Default: ""
 
-  CloudWatchEventRoleARN:
-    Description: CloudWatch Event Role ARN for Code Pipeline
-    Type: String
-    Default: ""
+  # CloudWatchEventRoleARN:
+  #   Description: CloudWatch Event Role ARN for Code Pipeline
+  #   Type: String
+  #   Default: ""
 
   AppRepositoryName:
     Description: Name of the Github Repository
@@ -47,21 +47,15 @@ Parameters:
     Type: String
     Default: ""
 
+  # TESTApprovalSNSARN:
+  #   Type: String
+  #   Description: TEST SNS Notification ARN
+  #   Default: ""
 
-  PRApprovalSNSARN:
-    Type: String
-    Description: Pull Request SNS Notification ARN
-    Default: ""
-
-  TESTApprovalSNSARN:
-    Type: String
-    Description: TEST SNS Notification ARN
-    Default: ""
-
-  ProdApprovalSNSARN:
-    Type: String
-    Description: Prod SNS Notification ARN
-    Default: ""
+  # ProdApprovalSNSARN:
+  #   Type: String
+  #   Description: Prod SNS Notification ARN
+  #   Default: ""
 
 Resources:
   S3Bucket:
@@ -95,7 +89,7 @@ Resources:
         ImagePullCredentialsType: CODEBUILD
         PrivilegedMode: true
         Type: LINUX_CONTAINER
-      ServiceRole: !Ref CodeBuildProjectRoleARN
+      ServiceRole: !ImportValue CodePipelineBuildProjectRoleOutput
       Source:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
@@ -127,7 +121,7 @@ Resources:
         ImagePullCredentialsType: CODEBUILD
         PrivilegedMode: true
         Type: LINUX_CONTAINER
-      ServiceRole: !Ref CodeBuildProjectRoleARN
+      ServiceRole: !ImportValue CodePipelineBuildProjectRoleOutput
       Source:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
@@ -159,7 +153,7 @@ Resources:
         ImagePullCredentialsType: CODEBUILD
         PrivilegedMode: true
         Type: LINUX_CONTAINER
-      ServiceRole: !Ref CodeBuildProjectRoleARN
+      ServiceRole: !ImportValue CodePipelineBuildProjectRoleOutput
       Source:
         Type: CODEPIPELINE
       EncryptionKey: alias/aws/s3
@@ -191,7 +185,7 @@ Resources:
         ImagePullCredentialsType: CODEBUILD
         PrivilegedMode: true
         Type: LINUX_CONTAINER
-      ServiceRole: !Ref CodeBuildProjectRoleARN
+      ServiceRole: !ImportValue CodePipelineBuildProjectRoleOutput
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Sub |
@@ -216,7 +210,7 @@ Resources:
     Type: AWS::CodePipeline::Pipeline
     DependsOn: S3Bucket
     Properties:
-      RoleArn: !Ref CodePipelineRoleARN
+      RoleArn: !ImportValue CodePipelineRoleOutput
       Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
       PipelineType: "V2" 
       Triggers:
@@ -281,7 +275,7 @@ Resources:
                 Version: "1"
               Configuration:
                 NotificationArn: 
-                  Ref: TESTApprovalSNSARN
+                  !ImportValue TESTApprovalTopicArn
               Name: DP-Pipeline-Approval
               RunOrder: 1
             - ActionTypeId:
@@ -291,7 +285,7 @@ Resources:
                 Version: "1"
               Configuration:
                 NotificationArn: 
-                  Ref: TESTApprovalSNSARN
+                  !ImportValue TESTApprovalTopicArn
               Name: SecOps-Pipeline-Approval
               RunOrder: 2
             - ActionTypeId:
@@ -301,7 +295,7 @@ Resources:
                 Version: "1"
               Configuration:
                 NotificationArn: 
-                  Ref: TESTApprovalSNSARN
+                  !ImportValue TESTApprovalTopicArn
               Name: WPaaS-Admin-Approval
               RunOrder: 3
           Name: TEST-Approval
@@ -328,7 +322,7 @@ Resources:
                 Version: "1"
               Configuration:
                 NotificationArn: 
-                  Ref: ProdApprovalSNSARN
+                  !ImportValue ProdApprovalTopicArn
               Name: SecOps-Pipeline-Approval
               RunOrder: 1
             - ActionTypeId:
@@ -338,7 +332,7 @@ Resources:
                 Version: "1"
               Configuration:
                 NotificationArn: 
-                  Ref: ProdApprovalSNSARN
+                  !ImportValue ProdApprovalTopicArn
               Name: WPaaS-Admin-Approval
               RunOrder: 2        
           Name: Prod-Approval
@@ -404,7 +398,7 @@ Resources:
                 - ":"
                 - Ref: OUCICDPipeline 
           Id: !Sub '${ResourceNamePrefix}-cicdPipeline'
-          RoleArn: !Ref CloudWatchEventRoleARN
+          RoleArn: !ImportValue CodePipelineEventsRoleOutput
 
 Outputs:
   CICDPipelineName:
