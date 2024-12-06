@@ -4,7 +4,6 @@ phases:
   install:
     commands:
       - pip3 install boto3
-      - gem install cfn-nag
 
   pre_build:
     commands:
@@ -15,8 +14,14 @@ phases:
       - CICD_BUCKET_PREFIX=ou-cicd-pipeline-app-prereqs
   build:
     commands:
-      # - echo "Running CFN Nag Scan on Templates"
-      # - cfn_nag_scan --input-path $TEMPLATE_FILE_PATH
 
       - echo "Triggering deployment.."
-      - python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME
+      - |
+        if [ -z ${TRANSITION_TYPE+x} ]; then 
+          echo "TRANSITION_TYPE is unset; defaulting to 'retain'";
+          python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME;
+        else 
+          echo "TRANSITION_TYPE is set to '$TRANSITION_TYPE'"; 
+          python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME --transition_type $TRANSITION_TYPE;
+        fi
+      - 

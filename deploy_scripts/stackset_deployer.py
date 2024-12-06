@@ -561,5 +561,31 @@ class Deployer:
         except Exception as excep:
             error_msg = f"Error in processing {self.stack_set_name}: {str(excep)}"
             LOGGER.error(error_msg)
-            raise Exception(error_msg)        
+            raise Exception(error_msg)    
+    def transition(self, deployment_config_file):
+        """
+        This method processes the stack set deployment request
+        based on the values provided in deployment config file
+        """
+        try:
+            LOGGER.info("Initiating the deployment process..")
+            self.deployment_configs = self.get_deployment_configs(deployment_config_file)
+            transition_type = self.deployment_configs['transition_type'].lower()
+            self.stack_set_name = f"{self.deployment_configs['stack_set_name']}-{self.environment}"            
+            
+            if transition_type == 'delete': 
+                self.undeploy()
+            elif deployment_action == 'retain':
+                pass
+            else:
+                error_message = "Invalid deployment action provided in deployment config file. Valid options are 'deploy' and 'delete'."
+                raise Exception(error_message)
+
+            LOGGER.info("Deployment Process Completed")
+        except Exception as excep:
+            error_msg = f"Error in processing {self.stack_set_name}: {str(excep)}"
+            LOGGER.error(error_msg)
+            raise Exception(error_msg)    
+
+        
 

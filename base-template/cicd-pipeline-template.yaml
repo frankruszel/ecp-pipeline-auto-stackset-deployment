@@ -198,7 +198,7 @@ Resources:
             pre_build:
               commands:
                 - cfn_nag_scan --input-path templates/
-                - for tmplt in $(ls ./template); 
+                - for tmplt in $(ls ./templates); 
                   do
                       rel_url=$ARTIFACTS_BUCKET/templates/${ResourceNamePrefix}/$tmplt;
                       aws s3 cp ./templates/$tmplt s3://$rel_url --acl bucket-owner-full-control;
@@ -278,7 +278,7 @@ Resources:
                   !ImportValue TESTApprovalTopicArn
               Name: Pipeline-Approval
               RunOrder: 1
-          Name: TEST-Approval
+          Name: Procceed-to-TEST-Approval
         - Actions:
             - ActionTypeId:
                 Category: Build
@@ -305,7 +305,7 @@ Resources:
                   !ImportValue ProdApprovalTopicArn
               Name: Pipeline-Approval
               RunOrder: 1
-          Name: Prod-Approval
+          Name: Procceed-to-Prod-Approval
         - Actions:
             - ActionTypeId:
                 Category: Build
@@ -325,50 +325,6 @@ Resources:
         Location:
           Ref: TemplateBucket
         Type: S3
-          
-  OUCICDPipelineEventRule: 
-    Type: AWS::Events::Rule
-    Properties:
-      Name: !Sub '${ResourceNamePrefix}-cicdpipeline-trigger-rule'
-      EventPattern:
-        source:
-          - aws.codecommit
-        resources:
-          - Fn::Join:
-              - ""
-              - - "arn:"
-                - Ref: AWS::Partition
-                - ":codecommit:"
-                - Ref: AWS::Region
-                - ":"
-                - Ref: AWS::AccountId
-                - ":"
-                - Ref: AppRepositoryName
-        detail-type:
-          - CodeCommit Repository State Change
-        detail:
-          event:
-            - referenceCreated
-            - referenceUpdated
-          referenceType:
-            - branch
-          referenceName:
-            - main
-      State: ENABLED
-      Targets:
-        - Arn:
-            Fn::Join:
-              - ""
-              - - "arn:"
-                - Ref: AWS::Partition
-                - ":codepipeline:"
-                - Ref: AWS::Region
-                - ":"
-                - Ref: AWS::AccountId 
-                - ":"
-                - Ref: OUCICDPipeline 
-          Id: !Sub '${ResourceNamePrefix}-cicdPipeline'
-          RoleArn: !ImportValue CodePipelineEventsRoleOutput
 
 Outputs:
   CICDPipelineName:

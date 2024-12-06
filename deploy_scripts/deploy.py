@@ -147,15 +147,23 @@ def main(args):
     region = args.region
     s3_bucket = args.s3_bucket
     app_name = args.app_name
+    transition_action = args.transition_action
 
     auto_deployer = AutoDeployer(environment, region, s3_bucket, app_name)
-    auto_deployer.deploy()
+
+    if transition_action == 'True':
+        auto_deployer.transition()
+    elif transition_action == 'False':
+        auto_deployer.deploy()
+    else:
+        error_msg = f"Invalid transition action {transition_action} provided. Valid options are 'True' and 'False'"
+        raise Exception(error_msg)
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(prog='deploy.py',
-                                     usage='%(prog)s --env <environment> --region <aws region> --s3_bucket <artifact s3 bucket> --app_name <repository/app name>',
+                                     usage='%(prog)s --env <environment> --region <aws region> --s3_bucket <artifact s3 bucket> --app_name <repository/app name> --transition_action <True/False>', 
                                      description="Delegated Admin Service Managed Stack Set Automated Deployer")
     parser.add_argument('--env',
                         action='store',
@@ -173,6 +181,11 @@ if __name__ == "__main__":
                         action='store',
                         type=str,
                         required=True)
+    parser.add_argument('--transition_type',
+                        action='store',
+                        type=str,
+                        required=True,
+                        default='False')
     arguments = parser.parse_args()
     sys.path.append(os.path.dirname(__file__))
     main(arguments)
