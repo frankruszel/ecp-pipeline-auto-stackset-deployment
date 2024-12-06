@@ -14,8 +14,8 @@ phases:
       - CICD_BUCKET_PREFIX=ou-cicd-pipeline-app-prereqs
       - |
         if [ -z ${TRANSITION_ACTION+x} ]; then 
-          echo "TRANSITION_ACTION is unset; defaulting to 'retain'"
-          TRANSITION_ACTION="retain"
+          echo "TRANSITION_ACTION is unset; defaulting to 'False'"
+          TRANSITION_ACTION="False"
         fi
   build:
     commands:
