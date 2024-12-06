@@ -19,6 +19,7 @@ phases:
       - |
         if [ -z ${TRANSITION_TYPE+x} ]; then 
           echo "TRANSITION_TYPE is unset; defaulting to 'retain'";
+          TRANSITION_TYPE="retain";
           python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME;
         else 
           echo "TRANSITION_TYPE is set to '$TRANSITION_TYPE'"; 
