@@ -1,6 +1,6 @@
 {
     "deployment_action": "deploy",
-    "transition_action": "delete",
+    "transition_type": "delete",
     "stack_set_name": "ECP-IAC-StackSet",
     "stack_set_desciption": "ECP",
     "deployment_targets": {
