@@ -292,7 +292,7 @@ Resources:
                       - '[{"name":"${Name}","value":"${Value}","type":"PLAINTEXT"}]'
                       - Name:
                           "TRANSITION_ACTION"
-                      - Value: 
+                        Value: 
                           "True"
               InputArtifacts:
                 - Name: SourceArtifact
@@ -339,7 +339,7 @@ Resources:
                       - '[{"name":"${Name}","value":"${Value}","type":"PLAINTEXT"}]'
                       - Name:
                           "TRANSITION_ACTION"
-                      - Value: 
+                        Value: 
                           "True"
               InputArtifacts:
                 - Name: SourceArtifact
