@@ -289,7 +289,9 @@ Resources:
                 ProjectName: !Ref OUCICDCodeDevBuildProject
                 EnvironmentVariables:
                     !Sub
-                      - '[{"name":"TRANSITION_ACTION","value":"${Value}","type":"PLAINTEXT"}]'
+                      - '[{"name":"${Name}","value":"${Value}","type":"PLAINTEXT"}]'
+                      - Name:
+                          "TRANSITION_ACTION"
                       - Value: 
                           "True"
               InputArtifacts:
@@ -324,6 +326,26 @@ Resources:
               Name: Pipeline-Approval
               RunOrder: 1
           Name: Procceed-to-Prod-Approval
+        - Actions:
+            - ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref OUCICDCodeTESTBuildProject
+                EnvironmentVariables:
+                    !Sub
+                      - '[{"name":"${Name}","value":"${Value}","type":"PLAINTEXT"}]'
+                      - Name:
+                          "TRANSITION_ACTION"
+                      - Value: 
+                          "True"
+              InputArtifacts:
+                - Name: SourceArtifact
+              Name: Build-Action
+              RunOrder: 1
+          Name: TEST-Transition-Action
         - Actions:
             - ActionTypeId:
                 Category: Build
