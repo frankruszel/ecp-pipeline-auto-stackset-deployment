@@ -31,11 +31,12 @@ LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
 
 class AutoDeployer:
-    def __init__(self, env, region, s3_bucket, app_name):
+    def __init__(self, env, region, s3_bucket, app_name, transition_action):
         self.env = env
         self.aws_region = region
         self.artifact_bucket = s3_bucket
         self.app_name = app_name
+        self.transition_action = transition_action
         self.template_path = f"{os.getcwd()}/templates/"
         self.template_parameters_path = f"{os.getcwd()}/parameters/"
         self.deployment_config_file = f"{os.getcwd()}/deploy_configs/deployment_config.json"
@@ -130,7 +131,7 @@ class AutoDeployer:
             for template in templates:
                 template_url = self.stage_cloudformation_template(self.app_name, template[0])
                 parameter_file = f"{self.template_parameters_path}{template[1]}"
-                ss_deployer.processor(template_url, parameter_file, self.deployment_config_file)
+                ss_deployer.processor(template_url, parameter_file, self.deployment_config_file, self.transition_action)
 
             LOGGER.info("Auto Deployment Starts")
         except Exception as excep:
@@ -149,15 +150,8 @@ def main(args):
     app_name = args.app_name
     transition_action = args.transition_action
 
-    auto_deployer = AutoDeployer(environment, region, s3_bucket, app_name)
-
-    if transition_action == 'True':
-        auto_deployer.transition()
-    elif transition_action == 'False':
-        auto_deployer.deploy()
-    else:
-        error_msg = f"Invalid transition action {transition_action} provided. Valid options are 'True' and 'False'"
-        raise Exception(error_msg)
+    auto_deployer = AutoDeployer(environment, region, s3_bucket, app_name, transition_action)
+    auto_deployer.deploy()
 
 
 if __name__ == "__main__":

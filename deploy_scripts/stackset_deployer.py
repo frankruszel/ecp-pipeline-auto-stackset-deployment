@@ -538,7 +538,7 @@ class Deployer:
             error_msg = f"Error while deleting stack set {self.stack_set_name}: {str(excep)}"
             raise Exception(error_msg)  
 
-    def processor(self, cft_file, cft_parameters_file, deployment_config_file):
+    def processor(self, cft_file, cft_parameters_file, deployment_config_file, transition_action):
         """
         This method processes the stack set deployment request
         based on the values provided in deployment config file
@@ -548,13 +548,18 @@ class Deployer:
             self.deployment_configs = self.get_deployment_configs(deployment_config_file)
             deployment_action = self.deployment_configs['deployment_action'].lower()
             self.stack_set_name = f"{self.deployment_configs['stack_set_name']}-{self.environment}"            
-            
-            if deployment_action == 'deploy':
-                self.deploy(cft_file, cft_parameters_file)
-            elif deployment_action == 'delete':
-                self.undeploy()
+            if transition_action == 'True':
+                self.transition(deployment_config_file)
+            elif transition_action == 'False':
+                if deployment_action == 'deploy':
+                    self.deploy(cft_file, cft_parameters_file)
+                elif deployment_action == 'delete':
+                    self.undeploy()
+                else:
+                    error_message = "Invalid deployment action provided in deployment config file. Valid options are 'deploy' and 'delete'."
+                    raise Exception(error_message)
             else:
-                error_message = "Invalid deployment action provided in deployment config file. Valid options are 'deploy' and 'delete'."
+                error_message = "Invalid transition action provided in deployment config file. Valid options are 'True' and 'False'."
                 raise Exception(error_message)
 
             LOGGER.info("Deployment Process Completed")
