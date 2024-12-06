@@ -12,17 +12,13 @@ phases:
       - DEPLOYMENT_SCRIPT_FILE=./deploy_scripts/deploy.py
       - CICD_BUCKET=ou-cicd-pipeline-artifact
       - CICD_BUCKET_PREFIX=ou-cicd-pipeline-app-prereqs
+      - |
+        if [ -z ${TRANSITION_TYPE+x} ]; then 
+          echo "TRANSITION_TYPE is unset; defaulting to 'retain'";
+          TRANSITION_TYPE=$("retain");
+        fi
   build:
     commands:
 
       - echo "Triggering deployment.."
-      - |
-        if [ -z ${TRANSITION_TYPE+x} ]; then 
-          echo "TRANSITION_TYPE is unset; defaulting to 'retain'";
-          TRANSITION_TYPE="retain";
-          python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME;
-        else 
-          echo "TRANSITION_TYPE is set to '$TRANSITION_TYPE'"; 
-          python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME --transition_type $TRANSITION_TYPE;
-        fi
-      - 
+      - python $DEPLOYMENT_SCRIPT_FILE --env $DEPLOY_ENV --region $AWS_REGION --s3_bucket $ARTIFACTS_BUCKET --app_name $REPOSITORY_NAME --transition_type $TRANSITION_TYPE;
