@@ -14,8 +14,8 @@ phases:
       - CICD_BUCKET_PREFIX=ou-cicd-pipeline-app-prereqs
       - |
         if [ -z ${TRANSITION_TYPE+x} ]; then 
-          echo "TRANSITION_TYPE is unset; defaulting to 'retain'";
-          TRANSITION_TYPE=$("retain");
+          echo "TRANSITION_TYPE is unset; defaulting to 'retain'"
+          TRANSITION_TYPE="retain"
         fi
   build:
     commands:
