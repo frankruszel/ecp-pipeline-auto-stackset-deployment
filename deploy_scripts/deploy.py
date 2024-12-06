@@ -184,7 +184,7 @@ if __name__ == "__main__":
     parser.add_argument('--transition_type',
                         action='store',
                         type=str,
-                        required=True,
+                        required=False,
                         default='False')
     arguments = parser.parse_args()
     sys.path.append(os.path.dirname(__file__))
