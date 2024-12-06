@@ -288,9 +288,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref OUCICDCodeDevBuildProject
                 EnvironmentVariables: 
-                  - Name: "TRANSITION_ACTION"
-                    Type: "PLAINTEXT"
-                    Value: "True"
+                  - '[{"name":"TRANSITION_ACTION","value":"True","type":"PLAINTEXT"}]'
               InputArtifacts:
                 - Name: SourceArtifact
               Name: Build-Action
