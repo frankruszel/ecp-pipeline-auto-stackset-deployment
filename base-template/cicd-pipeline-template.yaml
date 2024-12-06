@@ -287,13 +287,14 @@ Resources:
                 Version: "1"
               Configuration:
                 ProjectName: !Ref OUCICDCodeDevBuildProject
-                EnvironmentVariables: 
-                  - '[{"name":"TRANSITION_ACTION","value":"True","type":"PLAINTEXT"}]'
+                EnvironmentVariables:
+                    !Sub
+                      - '[{"name":"TRANSITION_ACTION","value":"${Value}","type":"PLAINTEXT"}]'
+                      - Value: 
+                          "True"
               InputArtifacts:
                 - Name: SourceArtifact
               Name: Build-Action
-              OutputArtifacts:
-                - Name: DevBuildArtifact
               RunOrder: 1
           Name: Dev-Transition-Action
         - Actions:
