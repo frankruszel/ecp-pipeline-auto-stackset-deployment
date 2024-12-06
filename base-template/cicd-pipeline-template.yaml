@@ -198,7 +198,7 @@ Resources:
             pre_build:
               commands:
                 - cfn_nag_scan --input-path templates/
-                - for tmplt in $(ls ./templates); 
+                - for tmplt in $(ls ./template); 
                   do
                       rel_url=$ARTIFACTS_BUCKET/templates/${ResourceNamePrefix}/$tmplt;
                       aws s3 cp ./templates/$tmplt s3://$rel_url --acl bucket-owner-full-control;
@@ -286,7 +286,26 @@ Resources:
                 Provider: CodeBuild
                 Version: "1"
               Configuration:
-                ProjectName: !Ref OUCICDCodeTESTBuildProject
+                ProjectName: !Ref OUCICDCodeDevBuildProject
+                EnvironmentVariables: 
+                  - name: TRANSITION_ACTION
+                    value: "True"
+                    type: PLAINTEXT
+              InputArtifacts:
+                - Name: SourceArtifact
+              Name: Build-Action
+              OutputArtifacts:
+                - Name: DevBuildArtifact
+              RunOrder: 1
+          Name: Dev-Transition-Action
+        - Actions:
+            - ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref OUCICDCodeTESTBuildProject                
               InputArtifacts:
                 - Name: SourceArtifact
               Name: Build-Action
