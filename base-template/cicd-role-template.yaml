@@ -21,8 +21,28 @@ Parameters:
     Description: Please specify Permission Boundary Policy ARN
     Type: String
     Default: ""    
+  
+  ManagementAccount:
+    Description: "Please specify Management Account ID"
+    Type: String
+    Default: ""
 
 Resources:
+  CrossAccountCodePipelineApproverRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ResourceNamePrefix}-cross-account-codepipeline-approver-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${ManagementAccount}:root'
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSCodePipelineApproverAccess
+
   GithubConnection:
     Type: AWS::CodeStarConnections::Connection
     Properties:
