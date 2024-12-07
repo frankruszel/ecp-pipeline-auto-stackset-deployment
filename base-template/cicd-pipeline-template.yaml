@@ -213,6 +213,9 @@ Resources:
       RoleArn: !ImportValue CodePipelineRoleOutput
       Name: !Sub '${ResourceNamePrefix}-cicd-pipeline'
       PipelineType: "V2" 
+      Variables:
+        - Name: Dev-Deployment-Check
+          DefaultValue: "True"
       Triggers:
         - GitConfiguration: 
             SourceActionName: "Source-Action"
@@ -252,7 +255,7 @@ Resources:
                 - Name: ScannedArtifact
               RunOrder: 1
           Name: CFN-Scanner
-        - Actions:
+        - Actions:                      
             - ActionTypeId:
                 Category: Build
                 Owner: AWS
@@ -267,6 +270,20 @@ Resources:
                 - Name: DevBuildArtifact
               RunOrder: 1
           Name: Dev-Deployment
+          BeforeEntry:
+            Conditions:
+              - Result: SKIP
+                Rules:
+                  - Name: Dev-Deployment-Check
+                    RuleTypeId:
+                      Category: Rule
+                      Owner: AWS
+                      Provider: VariableCheck
+                      Version: '1'
+                    Configuration:
+                      Operator: EQ
+                      Value: 'True'
+                      Variable: '#{variables.Dev-Deployment-Check}'
         - Actions:
             - ActionTypeId:
                 Category: Approval
@@ -276,6 +293,10 @@ Resources:
               Configuration:
                 NotificationArn: 
                   !ImportValue TESTApprovalTopicArn
+                CustomData: !Sub 
+                    - 'Enter Account using following link: https://signin.aws.amazon.com/switchrole?roleName=${CrossAccountCodePipelineApproverRoleOutput}&amp;account=${AWS::AccountId}'
+                    - CrossAccountCodePipelineApproverRoleOutput: !ImportValue CrossAccountCodePipelineApproverRoleOutput
+                  
               Name: Pipeline-Approval
               RunOrder: 1
           Name: Procceed-to-TEST-Approval
@@ -370,3 +391,5 @@ Outputs:
   CICDPipelineName:
     Value: !Ref OUCICDPipeline
     Description: CICD Pipeline Name
+    Export:
+        Name: CICDPipelineName

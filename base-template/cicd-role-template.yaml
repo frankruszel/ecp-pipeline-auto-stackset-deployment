@@ -288,6 +288,11 @@ Resources:
         - Ref: CodePipelineProdApprovalActionRole
 
 Outputs:
+  CrossAccountCodePipelineApproverRoleOutput:
+    Description: Cross Account Code Pipeline Approver Role ARN 
+    Value: !Ref CrossAccountCodePipelineApproverRole
+    Export:
+      Name: "CrossAccountCodePipelineApproverRoleOutput"
   CodePipelineRoleOutput:
     Description: Code Pipeline Role ARN 
     Value: !GetAtt CodePipelineRole.Arn
