@@ -1,6 +1,6 @@
 {
     "Parameters" : {
-    "VPC1CIDR": "172.21.1.0/24",
+    "VPC1CIDR": "172.21.2.0/24",
     "Stage": "Prod",
     "TagPrefix": "ECP-VPC"
     }
